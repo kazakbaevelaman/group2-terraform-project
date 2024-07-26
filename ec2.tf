@@ -78,10 +78,15 @@ data "aws_ami" "ubuntu" {
   owners = ["099720109477"]
 }
 
+resource "aws_key_pair" "deployer" {
+  key_name   = "gr2p"
+  public_key = file("~/.ssh/id_rsa.pub")
+}
+
 resource "aws_instance" "my_app" {
   ami                    = data.aws_ami.ubuntu.id
-  instance_type          = "t3.micro"
-  key_name               = "devops"
+  instance_type          = "t2.micro"
+  key_name               = aws_key_pair.deployer.key_name
   subnet_id              = aws_subnet.public_us_east_1a.id
   vpc_security_group_ids = [aws_security_group.my_app.id]
 

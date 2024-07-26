@@ -1,13 +1,8 @@
-provider "aws" {
-  region = "us-east-1"
-}
+resource "aws_vpc" "main" {
+  cidr_block = "10.0.0.0/16"
 
-terraform {
-  required_providers {
-    aws = {
-      source  = "hashicorp/aws"
-      version = "~> 4.36"
-    }
+  tags = {
+    Name = "main"
   }
 }
 
@@ -48,4 +43,3 @@ resource "aws_route_table_association" "public_us_east_1a" {
   subnet_id      = aws_subnet.public_us_east_1a.id
   route_table_id = aws_route_table.public.id
 }
-
