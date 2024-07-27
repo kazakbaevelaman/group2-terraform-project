@@ -18,13 +18,18 @@ resource "aws_iam_role" "prometheus_slack" {
 POLICY
 }
 
+# Allow lambda to write logs to CloudWatch
+resource "aws_iam_role_policy_attachment" "prometheus_slack_basic" {
+  role       = aws_iam_role.prometheus_slack.name
+  policy_arn = "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+}
 
 # Create ZIP archive with a lambda function
 data "archive_file" "prometheus_slack" {
   type = "zip"
 
-  source_dir  = "/home/ec2-user/project2/function/prometheus-slack"
-  output_path = "/home/ec2-user/project2/function/prometheus-slack.zip"
+  source_dir  = "/home/ec2-user/group2-terraform-project/function/prometheus-slack"
+  output_path = "/home/ec2-user/group2-terraform-project/function/prometheus-slack.zip"
 }
 
 # Upload ZIP archive with lambda to S3 bucket
@@ -50,6 +55,13 @@ resource "aws_lambda_function" "prometheus_slack" {
   source_code_hash = data.archive_file.prometheus_slack.output_base64sha256
 
   role = aws_iam_role.prometheus_slack.arn
+}
+
+# Create CloudWatch log group with 2 weeks retention policy
+resource "aws_cloudwatch_log_group" "prometheus_slack" {
+  name = "/aws/lambda/${aws_lambda_function.prometheus_slack.function_name}"
+
+  retention_in_days = 14
 }
 
 # Grant access to SNS topic to invoke a lambda function

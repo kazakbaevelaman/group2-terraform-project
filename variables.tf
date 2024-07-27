@@ -13,3 +13,7 @@ variable "vpc_cidr" {
 variable "email" {
   type = string
 }
+
+variable "subnet_cidr" {
+  type = string
+}
