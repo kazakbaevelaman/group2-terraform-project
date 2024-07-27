@@ -1,11 +1,10 @@
 resource "aws_vpc" "main" {
-  cidr_block = "10.0.0.0/16"
+  cidr_block = var.vpc_cidr
 
   tags = {
     Name = "main"
   }
 }
-
 
 resource "aws_internet_gateway" "igw" {
   vpc_id = aws_vpc.main.id
@@ -43,3 +42,4 @@ resource "aws_route_table_association" "public_us_east_1a" {
   subnet_id      = aws_subnet.public_us_east_1a.id
   route_table_id = aws_route_table.public.id
 }
+
